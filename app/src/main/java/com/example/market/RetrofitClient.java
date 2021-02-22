@@ -1,5 +1,6 @@
 package com.example.market;
 
+/*
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -18,4 +19,4 @@ public class RetrofitClient {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }
-}
+}*/
