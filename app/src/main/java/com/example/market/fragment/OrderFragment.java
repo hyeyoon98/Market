@@ -15,13 +15,12 @@ import com.example.market.R;
 
 public class OrderFragment extends Fragment {
 
+    public OrderFragment(){}
+
     public static OrderFragment newInstance() {
-        return new OrderFragment();
+        OrderFragment orderFragment = new OrderFragment();
+        return orderFragment;
     }
-
-    OrderFragment fragment;
-    OrderHistoryFragment orderHistoryFragment;
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

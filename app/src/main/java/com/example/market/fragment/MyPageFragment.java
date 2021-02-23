@@ -19,7 +19,12 @@ import com.example.market.R;
 
 public class MyPageFragment extends Fragment  {
 
+    public MyPageFragment(){}
 
+    public static MyPageFragment newInstance() {
+        MyPageFragment myPageFragment = new MyPageFragment();
+        return myPageFragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

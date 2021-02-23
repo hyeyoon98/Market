@@ -5,47 +5,161 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
+import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
+import com.example.market.fragment.FragmentAdapter;
 import com.example.market.fragment.MyPageFragment;
 import com.example.market.fragment.OrderFragment;
 import com.example.market.fragment.OrderHistoryFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+
+import java.util.ArrayList;
+
+import static com.example.market.fragment.FragmentAdapter.PAGE_POSITION;
 
 public class MainActivity extends AppCompatActivity {
 
     private final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1000;
     FloatingActionButton fab;
-    MainActivity activity;
+    private TabLayout tabLayout;
+    private ArrayList <String> tabNames = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE);
+        loadTabName();
+        setTabLayout();
+        setViewPager();
+        setCallButton();
 
         //플로팅 버튼 (권한 설정)
+
+
+/*        //fragment 설정
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.frame, OrderFragment.newInstance()).commit();
+
+        //하단바 버튼
+        LinearLayout btn_order = (LinearLayout) findViewById(R.id.order);
+        LinearLayout btn_orderHistory = (LinearLayout)findViewById(R.id.orderHistory);
+        LinearLayout btn_myPage = (LinearLayout)findViewById(R.id.myPage);
+
+        btn_order.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                OrderFragment orderFragment = new OrderFragment();
+                transaction.replace(R.id.frame, orderFragment);
+                transaction.commit();
+                Intent intentOrder = new Intent(MainActivity.this, OrderActivity.class);
+                startActivity(intentOrder);
+            }
+        });
+
+        btn_orderHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                OrderHistoryFragment orderHistoryFragment = new OrderHistoryFragment();
+                transaction.replace(R.id.frame, orderHistoryFragment);
+                transaction.commit();
+
+            }
+        });
+
+        btn_myPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                MyPageFragment myPageFragment = new MyPageFragment();
+                transaction.replace(R.id.frame, myPageFragment);
+                transaction.commit();
+            }
+        });
+*/
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String permission[], int[] grantResults){
+        switch (requestCode){
+            case MY_PERMISSIONS_REQUEST_CALL_PHONE:
+                if (grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+
+                } else {
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+                    alertDialog.setTitle("앱 권한");
+                    alertDialog.setMessage("해당 앱의 원활할 기능을 이용하시려면 애플리케이션 정보 > 권한에서 모든 권한을 허용해 주십시오.");
+                    alertDialog.setPositiveButton("권한설정", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent2 = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:"+getApplicationContext().getPackageName()));
+                            startActivity(intent2);
+                            dialog.cancel();
+                        }
+                    });
+                    alertDialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    alertDialog.show();
+                }
+                return;
+       }
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    private void setTabLayout(){
+        tabLayout = findViewById(R.id.tab);
+        tabNames.stream().forEach(name ->tabLayout.addTab(tabLayout.newTab().setText(name)));
+    }
+
+    private void loadTabName(){
+        tabNames.add("주문하기");
+        tabNames.add("주문내역");
+        tabNames.add("마이페이지");
+    }
+
+    private void setViewPager() {
+        FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager(), PAGE_POSITION);
+        ViewPager viewPager = findViewById(R.id.viewPager);
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+    }
+
+    private void setCallButton() {
         fab = findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,74 +201,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-        //fragment 설정
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.frame, OrderFragment.newInstance()).commit();
-
-        //하단바 버튼
-        LinearLayout btn_order = (LinearLayout) findViewById(R.id.order);
-        LinearLayout btn_orderHistory = (LinearLayout)findViewById(R.id.orderHistory);
-        LinearLayout btn_myPage = (LinearLayout)findViewById(R.id.myPage);
-
-        btn_order.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                OrderFragment orderFragment = new OrderFragment();
-                transaction.replace(R.id.frame, orderFragment);
-                transaction.commit();
-            }
-        });
-        btn_orderHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                OrderHistoryFragment orderHistoryFragment = new OrderHistoryFragment();
-                transaction.replace(R.id.frame, orderHistoryFragment);
-                transaction.commit();
-            }
-        });
-
-        btn_myPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                MyPageFragment myPageFragment = new MyPageFragment();
-                transaction.replace(R.id.frame, myPageFragment);
-                transaction.commit();
-            }
-        });
-
-    }
-
-    public void onRequestPermissionsResult(int requestCode, String permission[], int[] grantResults){
-        switch (requestCode){
-            case MY_PERMISSIONS_REQUEST_CALL_PHONE:
-                if (grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-
-                } else {
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-                    alertDialog.setTitle("앱 권한");
-                    alertDialog.setMessage("해당 앱의 원활할 기능을 이용하시려면 애플리케이션 정보 > 권한에서 모든 권한을 허용해 주십시오.");
-                    alertDialog.setPositiveButton("권한설정", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent2 = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:"+getApplicationContext().getPackageName()));
-                            startActivity(intent2);
-                            dialog.cancel();
-                        }
-                    });
-                    alertDialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-                    alertDialog.show();
-                }
-                return;
-       }
     }
 
 

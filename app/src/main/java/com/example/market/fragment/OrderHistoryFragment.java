@@ -13,7 +13,13 @@ import androidx.annotation.Nullable;
 import com.example.market.R;
 
 public class OrderHistoryFragment extends Fragment  {
-    OrderFragment fragment;
+
+    public OrderHistoryFragment(){}
+
+    public static OrderHistoryFragment newInstance() {
+        OrderHistoryFragment orderHistoryFragment = new OrderHistoryFragment();
+        return orderHistoryFragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
