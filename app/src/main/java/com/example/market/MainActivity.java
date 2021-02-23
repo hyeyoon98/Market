@@ -44,56 +44,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Tab 설정
         loadTabName();
         setTabLayout();
         setViewPager();
-        setCallButton();
 
         //플로팅 버튼 (권한 설정)
+        setCallButton();
 
-
-/*        //fragment 설정
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.frame, OrderFragment.newInstance()).commit();
-
-        //하단바 버튼
-        LinearLayout btn_order = (LinearLayout) findViewById(R.id.order);
-        LinearLayout btn_orderHistory = (LinearLayout)findViewById(R.id.orderHistory);
-        LinearLayout btn_myPage = (LinearLayout)findViewById(R.id.myPage);
-
-        btn_order.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                OrderFragment orderFragment = new OrderFragment();
-                transaction.replace(R.id.frame, orderFragment);
-                transaction.commit();
-                Intent intentOrder = new Intent(MainActivity.this, OrderActivity.class);
-                startActivity(intentOrder);
-            }
-        });
-
-        btn_orderHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                OrderHistoryFragment orderHistoryFragment = new OrderHistoryFragment();
-                transaction.replace(R.id.frame, orderHistoryFragment);
-                transaction.commit();
-
-            }
-        });
-
-        btn_myPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                MyPageFragment myPageFragment = new MyPageFragment();
-                transaction.replace(R.id.frame, myPageFragment);
-                transaction.commit();
-            }
-        });
-*/
     }
 
     public void onRequestPermissionsResult(int requestCode, String permission[], int[] grantResults){
@@ -131,12 +89,14 @@ public class MainActivity extends AppCompatActivity {
         tabNames.stream().forEach(name ->tabLayout.addTab(tabLayout.newTab().setText(name)));
     }
 
+    //탭 이름 설정
     private void loadTabName(){
         tabNames.add("주문하기");
         tabNames.add("주문내역");
         tabNames.add("마이페이지");
     }
 
+    //뷰페이져 설정
     private void setViewPager() {
         FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager(), PAGE_POSITION);
         ViewPager viewPager = findViewById(R.id.viewPager);
@@ -159,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //플로팅 버튼 (권한 설정)
     private void setCallButton() {
         fab = findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new View.OnClickListener() {

@@ -9,15 +9,26 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <include
-        android:id="@+id/toolbar_home"
-        layout="@layout/toolbar"/>
+        <include
+            android:id="@+id/toolbar_home"
+            layout="@layout/toolbar"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="fragment1 - 다음지도 출력" />
+        <LinearLayout
+            android:id="@+id/linear_orderList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ListView
+                android:id="@android:id/list"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"/>
+
+        </LinearLayout>
 
     </LinearLayout>
+
+    <include
+        android:id="@+id/btn_order"
+        layout="@layout/button_order"/>
 
 </FrameLayout>
