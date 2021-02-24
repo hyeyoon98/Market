@@ -3,4 +3,9 @@
     <style name="tab_text" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">18dp</item>
     </style>
+
+    <style name="FullHeightDialog" parent="android:style/Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
 </resources>

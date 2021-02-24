@@ -50,12 +50,12 @@ public class OrderItem {
 
 
 
-    public OrderItem(String marketName, String orderContent, String date, String userID){
+    /*public OrderItem(String marketName, String orderContent, String date, String userID){
         this.marketName = marketName;
         this.orderContent = orderContent;
         this.date = date;
         this.userID = userID;
-    }
+    }*/
 
     @Override
     public String toString() {

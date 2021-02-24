@@ -48,14 +48,10 @@ public class MainActivity extends AppCompatActivity {
         loadTabName();
         setTabLayout();
         setViewPager();
-<<<<<<< HEAD
         setCallButton();
-=======
 
         //플로팅 버튼 (권한 설정)
         setCallButton();
-
->>>>>>> 액티비티연결
     }
 
     public void onRequestPermissionsResult(int requestCode, String permission[], int[] grantResults){

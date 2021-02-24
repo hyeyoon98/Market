@@ -21,31 +21,15 @@ public class SplashActivity extends Activity {
         setContentView(R.layout.activity_splash);
 
         ImageView textImg = (ImageView)findViewById(R.id.img_logo);
-        ImageView carImg = (ImageView)findViewById(R.id.img_car);
+        //ImageView carImg = (ImageView)findViewById(R.id.img_car);
 
 
-        Animation imageAnim = AnimationUtils.loadAnimation(this, R.anim.ani_scale);
-        carImg.startAnimation(imageAnim);
+        /*Animation imageAnim = AnimationUtils.loadAnimation(this, R.anim.ani_scale);
+        carImg.startAnimation(imageAnim);*/
 
         Animation textAnim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.ani_translate);
-        imageAnim.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                textImg.setVisibility(View.VISIBLE);
-                textImg.startAnimation(textAnim);
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
+        textImg.setVisibility(View.VISIBLE);
+        textImg.startAnimation(textAnim);
 
         Handler handler = new Handler();
         handler.postDelayed(new splashHandler(), 3000);

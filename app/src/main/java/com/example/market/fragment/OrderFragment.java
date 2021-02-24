@@ -1,6 +1,8 @@
 package com.example.market.fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,18 +10,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.ListFragment;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.market.LoginActivity;
+import com.example.market.MainActivity;
+import com.example.market.OrderActivity;
+import com.example.market.OrderList.Order;
+import com.example.market.OrderList.OrderCallback;
 import com.example.market.OrderList.OrderItem;
 import com.example.market.OrderList.OrderListAdapter;
-import com.example.market.OrderList.OrderListInterface;
 import com.example.market.R;
 
 import org.json.JSONArray;
@@ -32,21 +50,23 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Tag;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class OrderFragment extends ListFragment {
 
 
-    ListView listView;
-    List<OrderItem> orderList;
-    OrderListAdapter adapter;
+    public final String DATA_STORE = "DATA_STORE";
+    private ListView mListView;
 
     public OrderFragment() {
     }
@@ -62,223 +82,120 @@ public class OrderFragment extends ListFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        volleyPost();
 
-        new BackgroundTask().excute();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_order, container, false);
-        orderList = new ArrayList<OrderItem>();
-        adapter = new OrderListAdapter(getActivity(), orderList);
-        listView.setAdapter(adapter);
 
+        mListView = (ListView) view.findViewById(android.R.id.list);
+        mListView.addHeaderView(new View(getActivity()));
+        mListView.addFooterView(new View(getActivity()));
+        ConstraintLayout btnOrder = (ConstraintLayout) view.findViewById(R.id.layout_btn_order);
 
-
-
-        try {
-            JSONObject jsonObject = new JSONObject(getArguments().getString("order_List"));
-            JSONArray jsonArray = jsonObject.getJSONArray("response");
-
-            int count = 0;
-
-            String marketName, orderContent, date;
-
-            while (count < jsonArray.length()){
-                JSONObject object = jsonArray.getJSONObject(count);
-
-                marketName = object.getString("market_name");
-                orderContent = object.getString("order_content");
-                date = object.getString("regist_date");
-
-                OrderItem orderItem = new OrderItem(marketName, orderContent, date);
-                orderList.add(orderItem);
-                count++;
+        btnOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), OrderActivity.class);
+                startActivity(intent);
             }
+        });
 
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         return view;
     }
 
+    public void volleyPost(){
+
+        String postUrl = "http://211.229.250.40/api_read_order"; // 서버 주소
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        JSONObject postData = new JSONObject();
+        String token = "token";
 
 
-    /*public void setRetrofit(){
-        Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl("https://211.229.250.40:8000/")
-                .addConverterFactory(GsonConverterFactory.create());
 
-        Retrofit retrofit = builder.build();
-
-        OrderListInterface client = retrofit.create(OrderListInterface.class);
-        Call<List<OrderItem>> call = client.getOrderList();
-
-        call.enqueue(new Callback<List<OrderItem>>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, postUrl, postData, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(Call<List<OrderItem>> call, Response<List<OrderItem>> response) {
+            public void onResponse(JSONObject response) {
 
+                mListView = (ListView) getActivity().findViewById(android.R.id.list);
+                List<OrderItem> orderItemList = new ArrayList<>();
+                String result = null;
+                String success = "200";
+                String error = "500";
 
-                System.out.println("성공");
-
-                List<OrderItem> resource = response.body();
-
-                ArrayList<String> arrayList = new ArrayList<>();
-
-                for (OrderItem re:resource){
-                    arrayList.add(re.getMarketName());
-                    arrayList.add(re.getOrderContent());
-                    arrayList.add(re.getDate());
-                }
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.order_item_list);
-                listView.setAdapter(adapter);
-
-            }
-
-            @Override
-            public void onFailure(Call<List<OrderItem>> call, Throwable t) {
-
-                System.out.println("실패");
-
-            }
-        });
-    }*/
-
-    /*public void setRetrofit(){
-
-        Retrofit retrofit = new Retrofit.Builder()
-
-                .baseUrl("https://211.229.250.40:8000/")
-
-                .addConverterFactory(GsonConverterFactory.create())
-
-                .build();
-
-
-
-        final OrderListInterface orderListInterface = retrofit.create(OrderListInterface.class);
-
-        Call<List<OrderItem>> call = orderListInterface.getOrderList();
-
-        call.enqueue(new Callback<List<OrderItem>>() {
-
-
-
-            @Override
-
-            public void onResponse(Call<List<OrderItem>> call, Response<List<OrderItem>> response) {
-
-                String test;
-
-                try{
-
-                    List<OrderItem> orderItems = response.body();
-
-
-
-                    for(int i = 0; i< orderItems.size(); i++){
-
-                        test = orderItems.get(i).getMarketName();
-
-                        Log.d("Retrofit", "TestCode : "+ test.toString());
-
-                        //txt_test.setText(test.toString());
-
+                try {
+                    if (response.getString("result").equals(success)) {
+                        System.out.println("응답해 >>>>>>>>>>" + success);
+                        result = response.getString("order_list");
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle("알림")
+                                .setMessage("예기치 못한 오류가 발생하였습니다.\n 고객센터에 문의바랍니다.")
+                                .setPositiveButton("확인", null)
+                                .create()
+                                .show();
                     }
 
-                }catch (Exception e){
-
-                    Log.d("onResponse", "Error");
-
+                } catch (JSONException e) {
                     e.printStackTrace();
-
                 }
 
+                parsingJSONData(result);
+
             }
-
-
-
+        }, new Response.ErrorListener() {
             @Override
-
-            public void onFailure(Call<List<OrderItem>> call, Throwable t) {
-
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }){
+            @Override
+            public Map<String,String> getHeaders() throws AuthFailureError {
+                final HashMap<String, String> headers = new HashMap<>();
+                headers.put("Authorization", getPreferenceString(token));
+                return headers;
             }
 
-        });
 
-    }*/
+        };
 
-    class BackgroundTask extends AsyncTask<Void,Void,String> {
-
-        String target;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            target = "https://211.229.250.40:8000/";
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-
-            try {
-                URL url = new URL(target);//URL 객체 생성
-
-                //URL을 이용해서 웹페이지에 연결하는 부분
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-
-                //바이트단위 입력스트림 생성 소스는 httpURLConnection
-                InputStream inputStream = httpURLConnection.getInputStream();
-
-                //웹페이지 출력물을 버퍼로 받음 버퍼로 하면 속도가 더 빨라짐
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                String temp;
-
-                //문자열 처리를 더 빠르게 하기 위해 StringBuilder클래스를 사용함
-                StringBuilder stringBuilder = new StringBuilder();
-
-                //한줄씩 읽어서 stringBuilder에 저장함
-                while ((temp = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(temp + "\n");//stringBuilder에 넣어줌
-                }
-
-                //사용했던 것도 다 닫아줌
-                bufferedReader.close();
-                inputStream.close();
-                httpURLConnection.disconnect();
-                return stringBuilder.toString().trim();//trim은 앞뒤의 공백을 제거함
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            Intent intent = new Intent(getActivity(), ManagementActivity.class);
-            intent.putExtra("userList", result);//파싱한 값을 넘겨줌
-            MainActivity.this.startActivity(intent);//ManagementActivity로 넘어감
-
-        }
+        requestQueue.add(jsonObjectRequest); // 서버에 요청
 
     }
 
+    public String getPreferenceString(String key) {
+        SharedPreferences pref = getContext().getSharedPreferences(DATA_STORE, MODE_PRIVATE);
+        return pref.getString(key, "");
+    }
 
+    private void parsingJSONData(String data) {
+        TextView none = (TextView)getActivity().findViewById(R.id.tv_none);
+        List<OrderItem> mList = new ArrayList<>();
+        System.out.println("리스트 가져와 >>>>>>>>>>>" + data);
+        try {
+            JSONArray jArray = new JSONArray(data);
+            if (jArray.length()==0) {
+                none.setVisibility(View.VISIBLE);
+                mListView.setVisibility(View.GONE);
+                // 주문 내역이 비었습니다.
+            }
+            for(int i = 0; i < jArray.length(); i++) {
+                mListView.setVisibility(View.VISIBLE);
+                OrderItem order = new OrderItem();
+                JSONObject jObject = jArray.getJSONObject(i);
+                order.setMarketName(jObject.getString("market_name"));
+                order.setOrderContent(jObject.getString("order_content"));
+                order.setDate(jObject.getString("regist_date"));
+                mList.add(order);
+            }
+            mListView.setAdapter(new OrderListAdapter(mList));
 
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            return null;
+        } catch(JSONException e) {
+            e.printStackTrace();
         }
     }
 }

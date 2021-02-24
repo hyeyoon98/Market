@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:visibility="gone"/>
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <!--<androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/img_car"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/ic_car"/>
-
+-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,11 +1,8 @@
 package com.example.market;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -34,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     CheckBox checkBox;
     String autoLoginId = "autoLoginId";
     String autoLoginPw = "autoLoginPw";
+    String token = "token";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void checkAutoLogin(String id){
 
-        Toast.makeText(this, id + "님 환영합니다.", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, id + "님 환영합니다.", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
@@ -103,6 +101,9 @@ public class LoginActivity extends AppCompatActivity {
                     if (response.getString("result").equals(success)){
                         String userID = idText.getText().toString();
                         String userPassword = passwordText.getText().toString();
+                        System.out.println("토큰 >>>>>>>>>>>>>"+response.getString("access_token"));
+                        setPreference(token,response.getString("access_token") );
+                        System.out.println("저장된 토큰 >>>>>>>>>"+getPreferenceString(token));
                         if(checkBox.isChecked()) {
                             setPreference(autoLoginId, userID);
                             setPreference(autoLoginPw, userPassword);
@@ -110,7 +111,8 @@ public class LoginActivity extends AppCompatActivity {
                             setPreference(autoLoginId, "");
                             setPreference(autoLoginPw, "");
                         }
-                        Toast.makeText(LoginActivity.this, getPreferenceString(autoLoginId) + "님 환영합니다.", Toast.LENGTH_LONG).show();
+                        //setPreference("token", response.getString("access_tp"));
+                        Toast.makeText(LoginActivity.this, userID + "님 환영합니다.", Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         LoginActivity.this.startActivity(intent);
 
@@ -163,7 +165,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences(DATA_STORE, MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putString(key, value);
-        editor.commit();
+        editor.apply();
     }
 
     public String getPreferenceString(String key) {
