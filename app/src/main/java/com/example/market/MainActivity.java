@@ -10,6 +10,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -37,12 +38,15 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton fab;
     private TabLayout tabLayout;
     private ArrayList <String> tabNames = new ArrayList<>();
+    private BackPressCloseHandler backPressCloseHandler;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        backPressCloseHandler = new BackPressCloseHandler(this);
 
         //Tab 설정
         loadTabName();
@@ -164,6 +168,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-
+    @Override public void onBackPressed() {
+        //super.onBackPressed();
+        backPressCloseHandler.onBackPressed();
+    }
 }
