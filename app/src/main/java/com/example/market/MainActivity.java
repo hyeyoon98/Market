@@ -44,10 +44,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Tab 설정
         loadTabName();
         setTabLayout();
         setViewPager();
+<<<<<<< HEAD
         setCallButton();
+=======
+
+        //플로팅 버튼 (권한 설정)
+        setCallButton();
+
+>>>>>>> 액티비티연결
     }
 
     public void onRequestPermissionsResult(int requestCode, String permission[], int[] grantResults){
@@ -85,12 +93,14 @@ public class MainActivity extends AppCompatActivity {
         tabNames.stream().forEach(name ->tabLayout.addTab(tabLayout.newTab().setText(name)));
     }
 
+    //탭 이름 설정
     private void loadTabName(){
         tabNames.add("주문하기");
         tabNames.add("주문내역");
         tabNames.add("마이페이지");
     }
 
+    //뷰페이져 설정
     private void setViewPager() {
         FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager(), PAGE_POSITION);
         ViewPager viewPager = findViewById(R.id.viewPager);
@@ -113,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //플로팅 버튼 (권한 설정)
     private void setCallButton() {
         fab = findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new View.OnClickListener() {

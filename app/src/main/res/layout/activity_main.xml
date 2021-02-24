@@ -26,9 +26,10 @@
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab"
+        app:tabTextAppearance="@style/tab_text"
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_height="50dp"/>
+        android:layout_height="60dp"/>
 
 </RelativeLayout>
 <!--
