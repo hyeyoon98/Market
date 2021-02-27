@@ -19,7 +19,6 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
-        android:backgroundTint="#ffffff"
         android:src="@drawable/ic_calling"
         app:backgroundTint="#FFFFFF"
         app:rippleColor="#CCBDBD" />
@@ -29,7 +28,7 @@
         app:tabTextAppearance="@style/tab_text"
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_height="60dp"/>
+        android:layout_height="60dp" />
 
 </RelativeLayout>
 <!--

@@ -1,6 +1,5 @@
 package com.example.market.fragment;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.fragment.app.ListFragment;
 
 import com.android.volley.AuthFailureError;
@@ -29,7 +30,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +43,7 @@ import static android.content.Context.MODE_PRIVATE;
     public class OrderHistoryFragment extends ListFragment {
 
         public final String DATA_STORE = "DATA_STORE";
+        private String profileID = "profile_id";
         private ListView mListView;
 
         public OrderHistoryFragment() {
@@ -103,6 +108,7 @@ import static android.content.Context.MODE_PRIVATE;
                         if (response.getString("result").equals(success)) {
                             System.out.println("응답해 >>>>>>>>>>" + success);
                             result = response.getString("order_list");
+
                         } else {
                             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                             builder.setTitle("알림")
@@ -139,15 +145,24 @@ import static android.content.Context.MODE_PRIVATE;
 
         }
 
+        public void setPreference(String key, String value){
+            SharedPreferences pref = getContext().getSharedPreferences(DATA_STORE, MODE_PRIVATE);
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString(key, value);
+            editor.apply();
+        }
+
         public String getPreferenceString(String key) {
             SharedPreferences pref = getContext().getSharedPreferences(DATA_STORE, MODE_PRIVATE);
             return pref.getString(key, "");
         }
 
+        //리스트뷰에 넣기
         private void parsingJSONData(String data) {
             TextView none = (TextView)getActivity().findViewById(R.id.tv_none);
             List<OrderItem> mList = new ArrayList<>();
             System.out.println("리스트 가져와 >>>>>>>>>>>" + data);
+
             try {
                 JSONArray jArray = new JSONArray(data);
                 if (jArray.length()==0) {
@@ -159,9 +174,13 @@ import static android.content.Context.MODE_PRIVATE;
                     mListView.setVisibility(View.VISIBLE);
                     OrderItem order = new OrderItem();
                     JSONObject jObject = jArray.getJSONObject(i);
+
+                    //마켓 이름 저장
+                    setPreference(profileID,jObject.getString("market_name") );
+
                     order.setMarketName(jObject.getString("market_name"));
                     order.setOrderContent(jObject.getString("order_content"));
-                    order.setDate(jObject.getString("regist_date"));
+                    order.setDate(setDateForm(jObject.getString("regist_date")));
                     mList.add(order);
                 }
                 mListView.setAdapter(new OrderListAdapter(mList));
@@ -169,6 +188,27 @@ import static android.content.Context.MODE_PRIVATE;
             } catch(JSONException e) {
                 e.printStackTrace();
             }
+        }
+
+
+        //날짜 형식 변경
+        public String setDateForm(String date) {
+            String newDate = null;
+            SimpleDateFormat receiveDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            SimpleDateFormat changeDate = new SimpleDateFormat("yyyy-MM-dd\nHH:mm");
+
+            try {
+                Date receiveForm = receiveDate.parse(date);
+                newDate = changeDate.format(receiveForm);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            return newDate;
+        }
+
+        public void refreshFragment(Fragment fragment) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.detach(this).attach(this).commit();
         }
     }
 

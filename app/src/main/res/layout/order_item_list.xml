@@ -1,50 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/tv_order_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="주문내역"
-        android:textSize="18dp"
-        android:layout_marginTop="3dp"
-        android:layout_marginStart="3dp"
-        android:layout_marginBottom="3dp"/>
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/layout_linear"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@+id/tv_date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_order_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/notosans_midiem"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="주문내역"
+            android:textSize="18dp" />
 
         <TextView
             android:id="@+id/tv_market_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="상호명"
-            android:textSize="15dp"
             android:layout_marginStart="3dp"
             android:layout_marginTop="3dp"
-            android:layout_marginBottom="3dp"/>
+            android:layout_marginBottom="3dp"
+            android:fontFamily="@font/notosans_midiem"
+            android:includeFontPadding="false"
+            android:text="상호명"
+            android:textSize="15dp" />
+    </LinearLayout>
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-
-        <TextView
+    <TextView
             android:id="@+id/tv_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="주문일시"
             android:textSize="15dp"
-            android:layout_marginTop="3dp"
-            android:layout_marginEnd="3dp"
-            android:layout_marginBottom="3dp"/>
+            android:fontFamily="@font/notosans_light"
+            android:includeFontPadding="false"
+            android:gravity="right"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="3dp"
+            app:layout_constraintStart_toEndOf="@+id/layout_linear"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-    </LinearLayout>
 
-</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

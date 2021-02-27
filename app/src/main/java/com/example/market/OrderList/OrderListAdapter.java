@@ -79,39 +79,14 @@ public class OrderListAdapter extends BaseAdapter {
         final Dialog dialog = new Dialog(context, R.style.FullHeightDialog);
         dialog.setContentView(R.layout.custom_dialog);
         // 8-9번 참고
-        dialog.setCancelable(false);
         dialog.show();
 
         TextView dContent = dialog.findViewById(R.id.dialog_content),
                 dDate = dialog.findViewById(R.id.dialog_date);
 
-        ImageView dClose = dialog.findViewById(R.id.dialog_close_img);
-        Button bClose = dialog.findViewById(R.id.dialog_close);
-
         dContent.setText(content);
         dDate.setText(date);
         dContent.setMovementMethod(new ScrollingMovementMethod());
-        dClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-        bClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
     }
 
-
-   /* public void setDateFormat(TextView tvDate, String date) {
-
-        Date date = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm", java.util.Locale.getDefault());
-        strDate = dateFormat.format(date);
-        dateView = (TextView)view.findViewById(R.id.tv_date);
-        date.setText;
-    }*/
 }

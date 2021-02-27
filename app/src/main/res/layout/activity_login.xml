@@ -26,6 +26,7 @@
             android:layout_marginEnd="50dp"
             android:textSize="15dp"
             android:textColor="@android:color/background_dark"
+            android:fontFamily="@font/notosans_midiem"
             android:includeFontPadding="false"
             android:hint="아이디"
             android:gravity="center|start"
@@ -44,6 +45,7 @@
             android:layout_marginEnd="50dp"
             android:textSize="15dp"
             android:textColor="@android:color/background_dark"
+            android:fontFamily="@font/notosans_midiem"
             android:includeFontPadding="false"
             android:hint="비밀번호"
             android:gravity="center|start"
@@ -59,6 +61,8 @@
             android:layout_height="wrap_content"
             android:text="자동로그인"
             android:textSize="15dp"
+            android:fontFamily="@font/notosans_light"
+            android:includeFontPadding="false"
             app:layout_constraintTop_toBottomOf="@+id/insert_password"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="50dp"/>
@@ -73,7 +77,9 @@
             android:layout_marginStart="50dp"
             android:layout_marginEnd="50dp"
             android:layout_marginTop="10dp"
-            android:text="로그인"/>
+            android:text="로그인"
+            android:fontFamily="@font/notosans_midiem"
+            android:includeFontPadding="false"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

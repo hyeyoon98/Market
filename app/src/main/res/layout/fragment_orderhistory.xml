@@ -21,6 +21,8 @@
             android:text="주문 내역이 비어있습니다."
             android:layout_gravity="center"
             android:textSize="15dp"
+            android:fontFamily="@font/notosans_midiem"
+            android:includeFontPadding="false"
             android:layout_marginTop="30dp"
             android:visibility="gone"/>
 

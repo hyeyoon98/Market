@@ -6,7 +6,7 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/borderline">
+    android:background="@drawable/shadow_bottom">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/title"
@@ -18,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginTop="5dp"
-        android:layout_margin="5dp"/>
+        android:layout_marginBottom="10dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

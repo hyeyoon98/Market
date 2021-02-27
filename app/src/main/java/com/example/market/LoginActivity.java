@@ -22,6 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.market.fragment.MyPageFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +30,8 @@ import org.json.JSONObject;
 public class LoginActivity extends AppCompatActivity {
 
     public final String DATA_STORE = "DATA_STORE";
+    private BackPressCloseHandler backPressCloseHandler;
+    private String param1="";
     EditText idText,passwordText;
     Button btn_login;
     CheckBox checkBox;
@@ -41,16 +44,16 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
+        backPressCloseHandler = new BackPressCloseHandler(this);
 
         idText= findViewById(R.id.insert_id);
         passwordText = findViewById(R.id.insert_password);
         btn_login = findViewById(R.id.btn_login);
         checkBox = findViewById(R.id.autoLogin);
 
+
         if (!getPreferenceString(autoLoginId).equals("") && !getPreferenceString(autoLoginPw).equals("")) {
             checkBox.setChecked(true);
-            System.out.println("dlrj>>>>>>>>>>>>>>"+autoLoginId);
             checkAutoLogin(getPreferenceString(autoLoginId));
         }
 
@@ -60,21 +63,26 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                String id = idText.getText().toString();
+                String pw = passwordText.getText().toString();
                 hideKeyboard();
-                volleyPost();
 
+                if (id.trim().length() == 0 || pw.trim().length() == 0 || id == null || pw == null) {
 
+                    AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                    builder.setTitle("알림")
+                            .setMessage("로그인 정보를 입력바랍니다.")
+                            .setPositiveButton("확인", null)
+                            .create()
+                            .show();
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+
+                } else {
+                    volleyPost();
+                }
             }
         });
-    }
-
-    public void checkAutoLogin(String id){
-
-        //Toast.makeText(this, id + "님 환영합니다.", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
-
     }
 
 
@@ -119,11 +127,15 @@ public class LoginActivity extends AppCompatActivity {
                             setPreference(autoLoginPw, "");
                         }
 
+                        //passData();
+
                         //setPreference("token", response.getString("access_tp"));
                         Toast.makeText(LoginActivity.this, userID + "님 환영합니다.", Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("userId", userID);
+                        System.out.println("저장된 토큰 >>>>>>>>>"+userID);
                         startActivity(intent);
-                        //finish();
+                        LoginActivity.this.finish();
 
                     } else if (response.getString("result").equals(errorId)){
 
@@ -183,6 +195,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+    //키보드 숨기기
     private void hideKeyboard()
     {
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -190,6 +203,7 @@ public class LoginActivity extends AppCompatActivity {
         imm.hideSoftInputFromWindow(passwordText.getWindowToken(), 0);
     }
 
+    //화면 터치 시 키보드 내려감
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         View focusView = getCurrentFocus();
@@ -205,6 +219,21 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
         return super.dispatchTouchEvent(ev);
+    }
+
+    //자동 로그인
+    public void checkAutoLogin(String id){
+
+        //Toast.makeText(this, id + "님 환영합니다.", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+
+    }
+
+    @Override public void onBackPressed() {
+        //super.onBackPressed();
+        backPressCloseHandler.onBackPressed();
     }
 
 

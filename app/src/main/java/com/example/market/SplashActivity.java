@@ -21,11 +21,6 @@ public class SplashActivity extends Activity {
         setContentView(R.layout.activity_splash);
 
         ImageView textImg = (ImageView)findViewById(R.id.img_logo);
-        //ImageView carImg = (ImageView)findViewById(R.id.img_car);
-
-
-        /*Animation imageAnim = AnimationUtils.loadAnimation(this, R.anim.ani_scale);
-        carImg.startAnimation(imageAnim);*/
 
         Animation textAnim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.ani_translate);
         textImg.setVisibility(View.VISIBLE);

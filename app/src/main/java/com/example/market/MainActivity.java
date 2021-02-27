@@ -5,12 +5,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -34,6 +34,7 @@ import static com.example.market.fragment.FragmentAdapter.PAGE_POSITION;
 
 public class MainActivity extends AppCompatActivity {
 
+
     private final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1000;
     FloatingActionButton fab;
     private TabLayout tabLayout;
@@ -42,11 +43,26 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         backPressCloseHandler = new BackPressCloseHandler(this);
+
+        Intent intent = getIntent();
+        String userId = intent.getStringExtra("userId");
+        MyPageFragment myPageFragment = new MyPageFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.viewPager,myPageFragment)
+                .commit();
+
+        System.out.println("메인값 >>>>>>>>>"+userId);
+        Bundle bundle = new Bundle();
+        bundle.putString("userId", userId);
+        myPageFragment.setArguments(bundle);
+
 
         //Tab 설정
         loadTabName();
@@ -91,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     private void setTabLayout(){
         tabLayout = findViewById(R.id.tab);
         tabNames.stream().forEach(name ->tabLayout.addTab(tabLayout.newTab().setText(name)));
+
     }
 
     //탭 이름 설정
@@ -172,4 +189,6 @@ public class MainActivity extends AppCompatActivity {
         //super.onBackPressed();
         backPressCloseHandler.onBackPressed();
     }
+
+
 }
