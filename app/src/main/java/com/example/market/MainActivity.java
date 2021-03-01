@@ -5,21 +5,31 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.market.fragment.FragmentAdapter;
 import com.example.market.fragment.MyPageFragment;
@@ -28,12 +38,20 @@ import com.example.market.fragment.OrderHistoryFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.example.market.fragment.FragmentAdapter.PAGE_POSITION;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = OrderFragment.class.getSimpleName();
+    private File tempFile;
+    private static final int PICK_FROM_ALBUM = 1;
+    private static final int PICK_FROM_CAMERA = 0;
+    Bitmap originalBm;
 
     private final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1000;
     FloatingActionButton fab;
@@ -106,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.N)
     private void setTabLayout(){
         tabLayout = findViewById(R.id.tab);
+
         tabNames.stream().forEach(name ->tabLayout.addTab(tabLayout.newTab().setText(name)));
 
     }
@@ -147,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_CALL);
-                intent.setData(Uri.parse("tel:01021940172"));
+                intent.setData(Uri.parse("tel:15660041"));
                 AlertDialog.Builder alertCall = new AlertDialog.Builder(MainActivity.this);
                 alertCall.setTitle("고객센터");
                 alertCall.setMessage("전화를 연결하시겠습니까?");
@@ -190,5 +209,24 @@ public class MainActivity extends AppCompatActivity {
         backPressCloseHandler.onBackPressed();
     }
 
+   /* @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        int request = requestCode & 0xffff;
+
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            if (null != fragment) {
+                fragment.onActivityResult(request, resultCode, data);
+            } else {
+                new OrderFragment().onActivityResult(request, resultCode, data);
+            }
+        }
+
+
+        Log.d(TAG, "resultCode(m) :>>>>>>>>>>>>>>>>>> " + request);
+        Log.d(TAG, "requestCode(m) :>>>>>>>>>>>>>>>>>> " + requestCode);
+        Log.d(TAG, "data(m) : >>>>>>>>>>>" + data);
+    }*/
 
 }

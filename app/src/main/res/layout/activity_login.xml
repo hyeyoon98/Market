@@ -6,10 +6,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <include
-        android:id="@+id/toolbar_home"
-        layout="@layout/toolbar"/>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,37 +13,68 @@
         android:focusableInTouchMode="true"
         android:focusable="true">
 
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_logo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="150dp"/>
+
+        <TextView
+            android:id="@+id/tv_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/logo"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="50dp"
+            android:text="#푸드는 사장님의 번창을 기원합니다"
+            android:textSize="15dp"
+            android:fontFamily="@font/gmarketsansmedium"
+            android:includeFontPadding="false"
+            android:textColor="@color/blue_500"/>
+
         <EditText
             android:id="@+id/insert_id"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_height="40dp"
             android:layout_marginStart="50dp"
             android:layout_marginEnd="50dp"
             android:textSize="15dp"
             android:textColor="@android:color/background_dark"
-            android:fontFamily="@font/notosans_midiem"
+            android:fontFamily="@font/gmarketsanslight"
             android:includeFontPadding="false"
             android:hint="아이디"
+            android:paddingLeft="10dp"
+            android:textColorHint="@color/blue_500"
+            android:background="@drawable/line_blue"
             android:gravity="center|start"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_content"
+            android:layout_marginTop="10dp"
             android:maxLines="1"
             android:imeOptions="actionDone"/>
 
         <EditText
             android:id="@+id/insert_password"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_marginTop="10dp"
             android:layout_marginStart="50dp"
             android:layout_marginEnd="50dp"
             android:textSize="15dp"
             android:textColor="@android:color/background_dark"
-            android:fontFamily="@font/notosans_midiem"
+            android:fontFamily="@font/gmarketsanslight"
             android:includeFontPadding="false"
             android:hint="비밀번호"
+            android:textColorHint="@color/blue_500"
+            android:inputType="textPassword"
+            android:paddingLeft="10dp"
+            android:background="@drawable/line_blue"
             android:gravity="center|start"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -61,24 +88,26 @@
             android:layout_height="wrap_content"
             android:text="자동로그인"
             android:textSize="15dp"
-            android:fontFamily="@font/notosans_light"
+            android:textColor="@color/blue_500"
+            android:fontFamily="@font/gmarketsansmedium"
             android:includeFontPadding="false"
+            android:buttonTint="@color/blue_500"
             app:layout_constraintTop_toBottomOf="@+id/insert_password"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="50dp"/>
+            android:layout_marginLeft="45dp"/>
 
         <Button
             android:id="@+id/btn_login"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/autoLogin"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginStart="50dp"
-            android:layout_marginEnd="50dp"
             android:layout_marginTop="10dp"
             android:text="로그인"
-            android:fontFamily="@font/notosans_midiem"
+            android:textSize="15dp"
+            android:background="@drawable/round_blue"
+            android:fontFamily="@font/gmarketsansmedium"
             android:includeFontPadding="false"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -57,14 +57,14 @@ public class MyPageFragment extends Fragment  {
 
         TextView tvUser = view.findViewById(R.id.id_user);
         String profileId = getPreferenceString(profileID);
-        tvUser.setText(profileId+" 사장님\n번창하세요*^^*");
+        tvUser.setText(profileId+"님");
 
 
 
 
 
-        //버튼 이벤트
-        ConstraintLayout btnLogout = view.findViewById(R.id.btn_logout);
+        //버튼 이벤트(로그아웃)
+       /* ConstraintLayout btnLogout = view.findViewById(R.id.btn_logout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,16 +72,12 @@ public class MyPageFragment extends Fragment  {
                 removeSharedPreferences(autoLoginPw);
                 ActivityCompat.finishAffinity(getActivity());
 
-                /*//프래그먼트 종료
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .remove(MyPageFragment.this)
-                        .commit();*/
+
 
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 startActivity(intent);
             }
-        });
+        });*/
 
         return view;
     }

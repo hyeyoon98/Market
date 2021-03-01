@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <FrameLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/blue_500"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -12,100 +11,146 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-                <include
-                    android:id="@+id/toolbar_home"
-                    layout="@layout/toolbar"/>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp">
+
+                        <TextView
+                            android:id="@+id/title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:text="My #푸드"
+                            android:textSize="20dp"
+                            android:textColor="@color/white"
+                            android:textStyle="italic"
+                            android:fontFamily="@font/gmarketsansbold"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="10dp"/>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:id="@+id/line1"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/white"
+                    android:layerType="software"/>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/shadow_bottom"
                     android:focusableInTouchMode="true"
                     android:focusable="true">
 
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/img_profile"
-                            android:layout_width="70dp"
-                            android:layout_height="70dp"
+                        <TextView
+                            android:id="@+id/tv_header"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            android:background="@drawable/ic_profile"
-                            android:layout_marginTop="30dp"/>
+                            android:gravity="center"
+                            android:text="번창하세요"
+                            android:textSize="25dp"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/gmarketsansbold"
+                            android:includeFontPadding="false"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="16dp"/>
 
                         <TextView
                             android:id="@+id/id_user"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/img_profile"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tv_header"
                             android:gravity="center"
-                            android:text="a님\n환영합니다"
-                            android:textSize="20dp"
-                            android:textColor="#808080"
-                            android:fontFamily="@font/notosans_midiem"
+                            android:text="번창하세요"
+                            android:textSize="30dp"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/gmarketsansbold"
                             android:includeFontPadding="false"
                             android:layout_marginTop="10dp"
-                            android:layout_marginBottom="30dp"/>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <!--<androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/trash_order"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:background="@drawable/borderline">
-
-                        <ImageView
-                            android:id="@+id/ic_trash"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            android:background="@drawable/ic_trash"/>
+                            android:layout_marginStart="16dp"/>
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tv_tail"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            app:layout_constraintStart_toEndOf="@+id/ic_trash"
-                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/id_user"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            android:layout_marginStart="8dp"
-                            android:textSize="20dp"
-                            android:text="주문 내역 비우기"/>
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:gravity="left"
+                            android:text="#푸드와 함께한지 100일이시네요!"
+                            android:textSize="18dp"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/gmarketsanslight"
+                            android:includeFontPadding="false"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="20dp"
+                            android:layout_marginStart="16dp"/>
 
-
-                </androidx.constraintlayout.widget.ConstraintLayout>-->
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/btn_logout"
                     android:layout_width="match_parent"
-                    android:layout_height="70dp"
-                    android:background="@drawable/shadow_top_bot">
+                    android:layout_height="match_parent">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/mypage_layout"
+                            android:layout_marginEnd="16dp">
+
+                                <TextView
+                                    android:id="@+id/tv_staff"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintBottom_toTopOf="@+id/tv_staff_name"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_marginBottom="10dp"
+                                    android:lineSpacingExtra="7dp"
+                                    android:text="납품 담당 직원이\n배정되었습니다"
+                                    android:textSize="25dp"
+                                    android:textColor="@color/blue_500"
+                                    android:fontFamily="@font/gmarketsansbold"
+                                    android:includeFontPadding="false"/>
+
+                                <TextView
+                                    android:id="@+id/tv_staff_name"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_marginBottom="15dp"
+                                    android:lineSpacingExtra="15dp"
+                                    android:text="성명 : 안영재\n직책 : 납품 담당\n연락처 : 1566.0041"
+                                    android:textSize="18dp"
+                                    android:textColor="@color/blue_500"
+                                    android:fontFamily="@font/gmarketsansmedium"
+                                    android:includeFontPadding="false"/>
+
+
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
                         <ImageView
                             android:id="@+id/ic_logout"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_width="150dp"
+                            android:layout_height="200dp"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            android:layout_marginStart="10dp"
-                            android:background="@drawable/ic_logout"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintStart_toEndOf="@+id/ic_logout"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            android:layout_marginStart="8dp"
-                            android:text="로그아웃"
-                            android:fontFamily="@font/notosans_midiem"
-                            android:includeFontPadding="false"/>
+                            android:background="@drawable/ic_person"/>
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

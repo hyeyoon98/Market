@@ -1,7 +1,9 @@
 package com.example.market.fragment;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.fragment.app.ListFragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -45,6 +48,8 @@ import static android.content.Context.MODE_PRIVATE;
         public final String DATA_STORE = "DATA_STORE";
         private String profileID = "profile_id";
         private ListView mListView;
+        private SwipeRefreshLayout swipeRefreshLayout;
+
 
         public OrderHistoryFragment() {
         }
@@ -61,6 +66,8 @@ import static android.content.Context.MODE_PRIVATE;
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             volleyPost();
+
+
         }
 
         @Nullable
@@ -68,9 +75,19 @@ import static android.content.Context.MODE_PRIVATE;
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_orderhistory, container, false);
 
+
+            swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
+
             mListView = (ListView) view.findViewById(android.R.id.list);
             mListView.addHeaderView(new View(getActivity()));
             mListView.addFooterView(new View(getActivity()));
+
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    volleyPost();
+                }
+            });
            // ConstraintLayout btnOrder = (ConstraintLayout) view.findViewById(R.id.layout_btn_order);
 
             /*btnOrder.setOnClickListener(new View.OnClickListener() {
@@ -98,6 +115,10 @@ import static android.content.Context.MODE_PRIVATE;
                 @Override
                 public void onResponse(JSONObject response) {
 
+
+                    System.out.println("응답받나????????" +response);
+
+
                     mListView = (ListView) getActivity().findViewById(android.R.id.list);
                     List<OrderItem> orderItemList = new ArrayList<>();
                     String result = null;
@@ -108,6 +129,7 @@ import static android.content.Context.MODE_PRIVATE;
                         if (response.getString("result").equals(success)) {
                             System.out.println("응답해 >>>>>>>>>>" + success);
                             result = response.getString("order_list");
+                            swipeRefreshLayout.setRefreshing(false);
 
                         } else {
                             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -129,12 +151,14 @@ import static android.content.Context.MODE_PRIVATE;
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     error.printStackTrace();
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             }){
                 @Override
                 public Map<String,String> getHeaders() throws AuthFailureError {
                     final HashMap<String, String> headers = new HashMap<>();
                     headers.put("Authorization", getPreferenceString(token));
+                    System.out.println(getPreferenceString("토큰값 >>>>>"+token));
                     return headers;
                 }
 
@@ -142,6 +166,7 @@ import static android.content.Context.MODE_PRIVATE;
             };
 
             requestQueue.add(jsonObjectRequest); // 서버에 요청
+            System.out.println("요청되나 ??????>>>>>>>>>>>"+jsonObjectRequest);
 
         }
 
@@ -169,21 +194,24 @@ import static android.content.Context.MODE_PRIVATE;
                     none.setVisibility(View.VISIBLE);
                     mListView.setVisibility(View.GONE);
                     // 주문 내역이 비었습니다.
-                }
-                for(int i = 0; i < jArray.length(); i++) {
-                    mListView.setVisibility(View.VISIBLE);
-                    OrderItem order = new OrderItem();
-                    JSONObject jObject = jArray.getJSONObject(i);
+                } else {
+                    for(int i = 0; i < jArray.length(); i++) {
+                        mListView.setVisibility(View.VISIBLE);
+                        OrderItem order = new OrderItem();
+                        JSONObject jObject = jArray.getJSONObject(i);
 
-                    //마켓 이름 저장
-                    setPreference(profileID,jObject.getString("market_name") );
+                        //마켓 이름 저장
+                        setPreference(profileID,jObject.getString("market_name") );
 
-                    order.setMarketName(jObject.getString("market_name"));
-                    order.setOrderContent(jObject.getString("order_content"));
-                    order.setDate(setDateForm(jObject.getString("regist_date")));
-                    mList.add(order);
+                        order.setMarketName(jObject.getString("market_name"));
+                        order.setOrderContent(jObject.getString("order_content"));
+                        order.setDate(setDateForm(jObject.getString("regist_date")));
+                        mList.add(order);
+                    }
+                    mListView.setAdapter(new OrderListAdapter(mList));
+
                 }
-                mListView.setAdapter(new OrderListAdapter(mList));
+
 
             } catch(JSONException e) {
                 e.printStackTrace();
@@ -195,7 +223,7 @@ import static android.content.Context.MODE_PRIVATE;
         public String setDateForm(String date) {
             String newDate = null;
             SimpleDateFormat receiveDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            SimpleDateFormat changeDate = new SimpleDateFormat("yyyy-MM-dd\nHH:mm");
+            SimpleDateFormat changeDate = new SimpleDateFormat("yyyy-MM-dd\nHH:mm:ss");
 
             try {
                 Date receiveForm = receiveDate.parse(date);
@@ -204,11 +232,6 @@ import static android.content.Context.MODE_PRIVATE;
                 e.printStackTrace();
             }
             return newDate;
-        }
-
-        public void refreshFragment(Fragment fragment) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.detach(this).attach(this).commit();
         }
     }
 

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="tab_text" parent="TextAppearance.Design.Tab">
-        <item name="fontFamily">@font/notosans_bold</item>
+        <item name="fontFamily">@font/gmarketsansbold</item>
         <item name="android:textSize">15dp</item>
         <item name="fontStyle">normal</item>
     </style>
 
     <style name="FullHeightDialog" parent="android:style/Theme.Dialog">
         <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 </resources>

@@ -21,4 +21,19 @@
         android:fontWeight = "400"
         android:font = "@font/notosans_bold"/>
 
+    <font
+        android:fontStyle = "normal"
+        android:fontWeight = "400"
+        android:font = "@font/gmarketsansbold"/>
+
+    <font
+        android:fontStyle = "normal"
+        android:fontWeight = "400"
+        android:font = "@font/gmarketsansmedium"/>
+
+    <font
+        android:fontStyle = "normal"
+        android:fontWeight = "400"
+        android:font = "@font/gmarketsanslight"/>
+
 </font-family>

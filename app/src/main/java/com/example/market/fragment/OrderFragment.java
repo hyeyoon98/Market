@@ -3,21 +3,30 @@ package com.example.market.fragment;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.ExifInterface;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,8 +66,11 @@ import com.example.market.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,17 +79,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 
 public class OrderFragment extends Fragment {
 
 
-    private static final int PICK_FROM_ALBUM = 1;
-    private static final int PICK_FROM_CAMERA = 2;
-    private static final String TAG = OrderFragment.class.getSimpleName(); ;
+    private static final int PICK_FROM_ALBUM = 2;
+    private static final int PICK_FROM_CAMERA = 1;
+    private static final String TAG = OrderFragment.class.getSimpleName();
+    ;
     public final String DATA_STORE = "DATA_STORE";
-    private File tempFile;
+    private File tempFile = null;
+    Bitmap bitmap;
     String currentPhotoPath;
+    Uri photoUri;
 
     public OrderFragment() {
     }
@@ -107,43 +123,38 @@ public class OrderFragment extends Fragment {
 
         EditText editOrder = view.findViewById(R.id.edit_order);
 
-        ImageView firstImg = view.findViewById(R.id.img1),
-                secondImg = view.findViewById(R.id.img2);
+        //test
+        ImageView firstImg = view.findViewById(R.id.img1);
 
         firstImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int permCheckCamera = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA);
                 int permCheckCameraWrite = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                int permCheckCameraRead = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE);
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (permCheckCameraWrite == PackageManager.PERMISSION_DENIED || permCheckCamera == PackageManager.PERMISSION_DENIED) {
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+                    if (permCheckCameraWrite == PackageManager.PERMISSION_DENIED || permCheckCamera == PackageManager.PERMISSION_DENIED || permCheckCameraRead == PackageManager.PERMISSION_DENIED) {
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
                     } else {
                         System.out.println("이미지 버튼 누르기>>>>>>");
                         showContent();
 
                     }
                 } else {
-
                     System.out.println("이미지 버튼 누르기(2)>>>>>>");
                     showContent();
                 }
             }
         });
 
-        secondImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showContent();
-            }
-        });
-
-
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String content = editOrder.getText().toString();
-                if (content.trim().length() == 0 || content == null) {
+
+                if ((content.trim().length() == 0 || content == null) && StringSubstring(tempFile).length() == 0) {
+                    System.out.println("156-업로드 >>>" + StringSubstring(tempFile));
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle("알림")
                             .setMessage("주문할 재료를 입력바랍니다.")
@@ -159,6 +170,86 @@ public class OrderFragment extends Fragment {
         return view;
     }
 
+    private void showContent() {
+
+
+        System.out.println("함수로 넘어가기>>>>>>");
+
+        final PhotoDialog dialog = new PhotoDialog(getActivity(), new PhotoDialog.PhotoDialogListener() {
+
+            @Override
+            public void clickBtnCamera() {
+                takePhoto();
+            }
+
+            @Override
+            public void clickBtnAlbum() {
+
+                albumPhoto();
+            }
+        });
+        dialog.show();
+    }
+
+    public void takePhoto() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        try {
+            tempFile = createImageFile();
+            Log.d(TAG, "tempFile : " + tempFile);
+        } catch (IOException e) {
+            Toast.makeText(getContext(), "이미지 처리 오류! 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+
+        if (tempFile != null) {
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                photoUri = FileProvider.getUriForFile(getContext(),
+                        "com.example.market.provider", tempFile);
+
+            } else {
+                photoUri = Uri.fromFile(tempFile);
+            }
+            //intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+            Log.d(TAG, "photoUri : " + photoUri);
+            Log.d(TAG, "resolveActivity : " + intent.resolveActivity(getActivity().getPackageManager()));
+
+            Log.d(TAG, "intent : " + intent);
+        }
+
+        startActivityForResult(intent, PICK_FROM_CAMERA);
+    }
+
+    public void albumPhoto() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+        startActivityForResult(intent, PICK_FROM_ALBUM);
+
+        Log.d(TAG, "album_intent : " + intent);
+    }
+
+    private File createImageFile() throws IOException {
+
+
+        // 이미지 파일 이름 ( blackJin_{시간}_ )
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "photo_order_" + timeStamp + "_";
+
+        // 이미지가 저장될 폴더 이름 ( blackJin )
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        if (!storageDir.exists()) {
+            storageDir.mkdirs();
+        }
+        // 파일 생성
+        File image = File.createTempFile(imageFileName, ".png", storageDir);
+        Log.d(TAG, "createImageFile : " + image.getAbsolutePath());
+
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
 
 ////////////////////여기부터
 
@@ -171,16 +262,22 @@ public class OrderFragment extends Fragment {
 
         JSONObject postData = new JSONObject();
 
+
         String token = "token";
 
+
         try {
+            //텍스트 주문 업로드
             EditText editOrder = getActivity().findViewById(R.id.edit_order);
             String contents = editOrder.getText().toString();
             contents = contents.replace("'", "''");
-            //contents= URLEncoder.encode(contents,"euc-kr");
             System.out.println("내용>>>>>>>>>>>>>>>>>>" + contents);
 
             postData.put("order_content", contents);
+            postData.put("order_img", StringSubstring(tempFile));
+
+            System.out.println("이미지 로드 >>>>>>>>>>>"+ bitmap);
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -192,10 +289,11 @@ public class OrderFragment extends Fragment {
             public void onResponse(JSONObject response) {
 
                 String success = "200";
+                System.out.println("응답해 >>>>>>>>>>(주문하기)" + response);
 
                 try {
                     if (response.getString("result").equals(success)) {
-                        System.out.println("응답해 >>>>>>>>>>" + success);
+                        System.out.println("응답해 >>>>>>>>>>(주문하기)" + success);
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle("알림")
                                 .setMessage("주문을 진행하시겠습니까?")
@@ -260,7 +358,7 @@ public class OrderFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 0) {
-            if (grantResults[0] == 0 && grantResults[1] == 0) {
+            if (grantResults[0] == 0 && grantResults[1] == 0 && grantResults[2] == 0) {
                 Toast.makeText(getActivity(), " 권한이 승인되었습니다.", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getActivity(), " 권한이 거절되었습니다. 사진 첨부를 이용하시려면 권한을 승인해주세요.", Toast.LENGTH_SHORT).show();
@@ -268,137 +366,33 @@ public class OrderFragment extends Fragment {
         }
     }
 
-    private void showContent() {
-
-        System.out.println("함수로 넘어가기>>>>>>");
-        final PhotoDialog dialog = new PhotoDialog(getActivity(), new PhotoDialog.PhotoDialogListener(){
-
-            @Override
-            public void clickBtnCamera() {
-                getImageFromCamera();
-            }
-
-            @Override
-            public void clickBtnAlbum() {
-                getImageFromAlbum();
-            }
-        });
-        dialog.show();
-
-        /*System.out.println("다이얼로그 띄우기>>>>>>");
-
-        ImageView btnCamera = (ImageView)getActivity().findViewById(R.id.btn_camera),
-                btnAlbum = (ImageView)getActivity().findViewById(R.id.btn_album);
-
-        btnCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                s
-                tartActivity(intent);
-            }
-        });
-
-        btnAlbum.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                startActivity(intent);
-
-            }
-        });*/
-    }
-
-
-    //api 24 이상 x
-    //카메라로 사진찍기
-    private void getImageFromCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-             tempFile = null;
-
-            try {
-                tempFile = createImageFile();
-            } catch (IOException e) {
-                Toast.makeText(getContext(), "이미지 처리 오류! 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-            }
-            if (tempFile != null) {
-
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    Uri photoUri = FileProvider.getUriForFile(getContext(),
-                            "com.example.market.provider", tempFile);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                    startActivityForResult(intent, PICK_FROM_CAMERA);
-
-                } else {
-                    Uri photoUri = Uri.fromFile(tempFile);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                    startActivityForResult(intent, PICK_FROM_CAMERA);
-                }
-            }
-
-        }
-
-    }
-
-    //앨범에서 사진 가져오기
-    private void getImageFromAlbum() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
-        startActivityForResult(intent, PICK_FROM_ALBUM);
-    }
-
-    //file 생성
-    private File createImageFile() throws IOException {
-
-
-        // 이미지 파일 이름 ( blackJin_{시간}_ )
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "photo_order_" + timeStamp + "_";
-
-        // 이미지가 저장될 폴더 이름 ( blackJin )
-        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-
-        // 파일 생성
-        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-        Log.d(TAG, "createImageFile : " + image.getAbsolutePath());
-
-        currentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode != Activity.RESULT_OK) {
-            Toast.makeText(getContext(), "취소 되었습니다.", Toast.LENGTH_SHORT).show();
+        ImageView img1 = getActivity().findViewById(R.id.img1);
 
-            if (tempFile != null) {
-                if (tempFile.exists()) {
-                    if (tempFile.delete()) {
-                        Log.e(TAG, tempFile.getAbsolutePath() + " 삭제 성공");
-                        tempFile = null;
-                    }
-                }
-            }
 
-            return;
-        }
+        System.out.println("data >>>>>>>>>>>" + data);
+        System.out.println("requestCode >>>>>>>>>>>" + requestCode);
 
-        if (requestCode == PICK_FROM_ALBUM && data != null && data.getData() != null) {
+        ImageView openImg = (ImageView) getActivity().findViewById(R.id.open_img1);
 
+        if (resultCode == RESULT_OK && requestCode == PICK_FROM_CAMERA) {
+            img1.setVisibility(View.GONE);
+            bitmap = (Bitmap) data.getParcelableExtra("data");
+            openImg.setImageBitmap(bitmap);
+            System.out.println("bitmap >>>>>>>>>>>" + bitmap);
+
+        } else if (resultCode == RESULT_OK && requestCode == PICK_FROM_ALBUM) {
             Uri photoUri = data.getData();
-            Log.d(TAG, "PICK_FROM_ALBUM photoUri : " + photoUri);
+            Log.d(TAG, "PICK_FROM_ALBUM photoUri : >>>>>>>>>>>" + photoUri);
 
             Cursor cursor = null;
 
             try {
-
-                /*
-                   Uri 스키마를
-                   content:/// 에서 file:/// 로  변경한다.*/
+                 /*  Uri 스키마를
+                content:/// 에서 file:/// 로  변경한다.*/
 
                 String[] proj = {MediaStore.Images.Media.DATA};
 
@@ -412,7 +406,9 @@ public class OrderFragment extends Fragment {
 
                 tempFile = new File(cursor.getString(column_index));
 
-                Log.d(TAG, "tempFile Uri : " + Uri.fromFile(tempFile));
+                Log.d(TAG, "tempFile_Album: >>>>>>>>>>>>>>" +tempFile);
+
+                Log.d(TAG, "tempFile Uri : >>>>>>>>>>>>>>" + Uri.fromFile(tempFile));
 
             } finally {
                 if (cursor != null) {
@@ -420,34 +416,20 @@ public class OrderFragment extends Fragment {
                 }
             }
 
-            setImage();
-
-        } else if (requestCode == PICK_FROM_CAMERA && data != null && data.getData() != null ) {
-
-            setImage();
+            img1.setVisibility(View.GONE);
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), photoUri);
+                openImg.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         }
     }
 
-    private void setImage() {
-
-        ImageView openImg1 = getActivity().findViewById(R.id.open_img1),
-                img1 = getActivity().findViewById(R.id.img1);
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        Bitmap originalBm = BitmapFactory.decodeFile(tempFile.getAbsolutePath(), options);
-        Log.d(TAG, "setImage : " + tempFile.getAbsolutePath());
-
-        img1.setVisibility(View.GONE);
-        openImg1.setVisibility(View.VISIBLE);
-        openImg1.setImageBitmap(originalBm);
-
-        /*
-          tempFile 사용 후 null 처리를 해줘야 합니다.
-    (resultCode != RESULT_OK) 일 때 tempFile 을 삭제하기 때문에
-        기존에 데이터가 남아 있게 되면 원치 않은 삭제가 이뤄집니다.*/
-                tempFile = null;
-
+    private String StringSubstring(File file) {
+        String result = file.getName();
+        return result;
     }
 }
 
