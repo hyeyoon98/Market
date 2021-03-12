@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -16,22 +17,17 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.market.fragment.MyPageFragment;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private RetrofitClient retrofitClient;
+    private initMyApi initMyApi;
+
     public final String DATA_STORE = "DATA_STORE";
     private BackPressCloseHandler backPressCloseHandler;
-    private String param1="";
     EditText idText,passwordText;
     Button btn_login;
     CheckBox checkBox;
@@ -79,47 +75,46 @@ public class LoginActivity extends AppCompatActivity {
                     alertDialog.show();
 
                 } else {
-                    volleyPost();
+                    //volleyPost();
+                    LoginResponse();
                 }
             }
         });
     }
 
+    public void LoginResponse() {
+        String userID = idText.getText().toString().trim();
+        String userPassword = passwordText.getText().toString().trim();
 
-    public void volleyPost(){
+        LoginRequest loginRequest = new LoginRequest(userID, userPassword);
 
-        String postUrl = "http://211.229.250.40/api_init_session"; // 서버 주소
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        retrofitClient = RetrofitClient.getInstance();
+        initMyApi = RetrofitClient.getRetrofitInterface();
 
-        JSONObject postData = new JSONObject();
-        try {
-
-            String userID = idText.getText().toString();
-            String userPassword = passwordText.getText().toString();
-
-            postData.put("input_id",userID);
-            postData.put("input_pw", userPassword);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, postUrl, postData, new Response.Listener<JSONObject>() {
+        initMyApi.getLoginResponse(loginRequest).enqueue(new Callback<LoginResponse>() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
 
-                String success = "200";
-                String errorId = "300";
-                String errorPw = "400";
+                Log.d("retrofit", "Data fetch success");
 
-                try {
-                    if (response.getString("result").equals(success)){
+                if (response.isSuccessful() && response.body() != null) {
+                    LoginResponse result = response.body();
+
+                    String resultCode = result.getResultCode();
+                    String token = result.getToken();
+
+                    String success = "200";
+                    String errorId = "300";
+                    String errorPw = "400";
+
+
+                    if (resultCode.equals(success)) {
                         String userID = idText.getText().toString();
                         String userPassword = passwordText.getText().toString();
-                        System.out.println("토큰 >>>>>>>>>>>>>"+response.getString("access_token"));
-                        setPreference(token,response.getString("access_token") );
-                        System.out.println("저장된 토큰 >>>>>>>>>"+getPreferenceString(token));
-                        if(checkBox.isChecked()) {
+
+                        setPreference(token,token);
+                        System.out.println("저장된 토큰 >>>>>>>>>" + getPreferenceString(token));
+                        if (checkBox.isChecked()) {
                             setPreference(autoLoginId, userID);
                             setPreference(autoLoginPw, userPassword);
                         } else {
@@ -133,11 +128,10 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, userID + "님 환영합니다.", Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         intent.putExtra("userId", userID);
-                        System.out.println("저장된 토큰 >>>>>>>>>"+userID);
                         startActivity(intent);
                         LoginActivity.this.finish();
 
-                    } else if (response.getString("result").equals(errorId)){
+                    } else if (resultCode.equals(errorId)) {
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
                         builder.setTitle("알림")
@@ -148,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
                         AlertDialog alertDialog = builder.create();
                         alertDialog.show();
 
-                    } else if (response.getString("result").equals(errorPw)) {
+                    } else if (resultCode.equals(errorPw)) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
                         builder.setTitle("알림")
                                 .setMessage("비밀번호가 일치하지 않습니다.\n 고객" +
@@ -166,20 +160,21 @@ public class LoginActivity extends AppCompatActivity {
                                 .show();
 
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
-
             }
-        }, new Response.ErrorListener() {
+
             @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                builder.setTitle("알림")
+                        .setMessage("예기치 못한 오류가 발생하였습니다.\n 고객센터에 문의바랍니다.")
+                        .setPositiveButton("확인", null)
+                        .create()
+                        .show();
+
             }
         });
-
-        requestQueue.add(jsonObjectRequest); // 서버에 요청
-
     }
 
     public void setPreference(String key, String value){
@@ -235,9 +230,5 @@ public class LoginActivity extends AppCompatActivity {
         //super.onBackPressed();
         backPressCloseHandler.onBackPressed();
     }
-
-
-
-
 
 }
