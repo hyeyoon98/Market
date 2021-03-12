@@ -209,24 +209,4 @@ public class MainActivity extends AppCompatActivity {
         backPressCloseHandler.onBackPressed();
     }
 
-   /* @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        int request = requestCode & 0xffff;
-
-        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-            if (null != fragment) {
-                fragment.onActivityResult(request, resultCode, data);
-            } else {
-                new OrderFragment().onActivityResult(request, resultCode, data);
-            }
-        }
-
-
-        Log.d(TAG, "resultCode(m) :>>>>>>>>>>>>>>>>>> " + request);
-        Log.d(TAG, "requestCode(m) :>>>>>>>>>>>>>>>>>> " + requestCode);
-        Log.d(TAG, "data(m) : >>>>>>>>>>>" + data);
-    }*/
-
 }

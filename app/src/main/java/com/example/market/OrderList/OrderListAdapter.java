@@ -1,29 +1,20 @@
 package com.example.market.OrderList;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.market.R;
-import com.example.market.fragment.DetailOrderListActivity;
+import com.example.market.DetailOrderListActivity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
-import okhttp3.internal.Util;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class OrderListAdapter extends BaseAdapter {
 

@@ -1,4 +1,4 @@
-package com.example.market;
+package com.example.market.DTO;
 
 import com.google.gson.annotations.SerializedName;
 

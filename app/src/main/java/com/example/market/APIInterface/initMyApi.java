@@ -1,10 +1,11 @@
-package com.example.market;
+package com.example.market.APIInterface;
+
+import com.example.market.DTO.LoginRequest;
+import com.example.market.DTO.LoginResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
-import retrofit2.http.Query;
 
 public interface initMyApi {
 

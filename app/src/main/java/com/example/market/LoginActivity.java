@@ -17,6 +17,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.market.APIInterface.RetrofitClient;
+import com.example.market.DTO.LoginRequest;
+import com.example.market.DTO.LoginResponse;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -24,7 +28,7 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     private RetrofitClient retrofitClient;
-    private initMyApi initMyApi;
+    private com.example.market.APIInterface.initMyApi initMyApi;
 
     public final String DATA_STORE = "DATA_STORE";
     private BackPressCloseHandler backPressCloseHandler;

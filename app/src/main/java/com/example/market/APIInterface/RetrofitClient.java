@@ -1,7 +1,4 @@
-package com.example.market;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+package com.example.market.APIInterface;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -11,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClient {
     
     private static RetrofitClient instance = null;
-    private static initMyApi initMyApi;
+    private static com.example.market.APIInterface.initMyApi initMyApi;
     private static String baseUrl = "http://211.229.250.40/";
 
 

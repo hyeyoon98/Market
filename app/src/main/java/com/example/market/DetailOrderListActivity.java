@@ -1,4 +1,4 @@
-package com.example.market.fragment;
+package com.example.market;
 
 import android.content.Intent;
 import android.os.Bundle;
