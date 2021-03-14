@@ -2,6 +2,8 @@ package com.example.market.OrderList;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.File;
+
 public class OrderItem {
 
     @SerializedName("marketName")
@@ -9,6 +11,9 @@ public class OrderItem {
 
     @SerializedName("order_content")
     private String orderContent;
+
+    @SerializedName("order_img")
+    private File imgFile;
 
     @SerializedName("regist_date")
     private String date;
